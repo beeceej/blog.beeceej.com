@@ -17,7 +17,7 @@ deploy:
   - provider: s3
     access_key_id: $AWS_ACCESS_KEY_ID
     secret_access_key: $AWS_SECRET_ACCESS_KEY
-    bucket: "static.bucket.test"
+    bucket: "static.beeceej.com"
     region: us-east-1
     local_dir: ./posts/json
     skip_cleanup: true
