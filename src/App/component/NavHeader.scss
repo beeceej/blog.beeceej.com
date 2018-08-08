@@ -1,0 +1,32 @@
+.parent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 10px;
+  padding-bottom: 30px;
+}
+
+.child {
+  margin: auto;
+  padding: 8px;
+}
+
+.nav {
+  font-family: monospace;
+  color: #357cb2;
+}
+
+.lightGray {
+  color: lightgray;
+}
+
+.fa {
+  font-size: 0.5em;
+  &:hover {
+    color: #185180;
+  }
+}
+
+.subParent {
+  margin-left: auto;
+}

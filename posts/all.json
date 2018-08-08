@@ -1,0 +1,32 @@
+{
+  "posts": [
+    {
+      "title": "Open Source is Awesome",
+      "id": "1",
+      "blurb":
+        "Open source enables people who enjoy tinkering to take ownership over what they're using on his or her machine...",
+      "author": "beeceej",
+      "postedAt": "July 14th, 2018",
+      "updatedAt": "July 14th, 2018",
+      "visible": true
+    },
+    {
+      "title": "Open Source is Awesome",
+      "id": "2",
+      "blurb": "",
+      "author": "beeceej",
+      "postedAt": "07/15/2018",
+      "updatedAt": "07/15/2018",
+      "visible": false
+    },
+    {
+      "title": "Give It A Try!",
+      "id": "3",
+      "blurb": "",
+      "author": "beeceej",
+      "postedAt": "July 23rd, 2018",
+      "updatedAt": "July 25th, 2018",
+      "visible": true
+    }
+  ]
+}

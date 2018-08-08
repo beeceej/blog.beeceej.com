@@ -1,0 +1,22 @@
+.title {
+  font-family: monospace;
+  font-size: 1.5em;
+  color: #357cb2;
+}
+
+.post {
+  margin: auto;
+  width: 80%;
+  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 1.2em;
+  line-height: 2;
+}
+
+code {
+  background: #eee;
+  padding: 0 5px;
+}
+
+pre code {
+  display: block;
+}
