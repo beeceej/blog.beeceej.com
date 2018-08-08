@@ -19,7 +19,7 @@ deploy:
     secret_access_key: $AWS_SECRET_ACCESS_KEY
     bucket: "static.beeceej.com"
     region: us-east-1
-    upload_dir: ./posts/
+    upload_dir: posts
     local_dir: ./posts/json
     skip_cleanup: true
   
