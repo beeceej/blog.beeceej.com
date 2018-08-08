@@ -1,7 +1,7 @@
-<!--id: 2-->
+<!--id: 4-->
 <!--title: Writing a Go interpreter in Go -->
 <!--author: Brian Jones-->
-<!--postedAt: August 7th-->
+<!--postedAt: August 7th, 2018-->
 <!--updatedAt: August 7th, 2018-->
 <!--visible: true-->
 
