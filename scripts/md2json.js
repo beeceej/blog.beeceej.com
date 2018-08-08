@@ -1,21 +1,12 @@
 const fs = require('fs')
 const path = require('path')
 const crypto = require('crypto')
-/*
-ID        string    `json:"id"`
-	Title     string    `json:"title"`
-	Author    string    `json:"author"`
-	Body      string    `json:"body"`
-	PostedAt  time.Time `json:"postedAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
-	Visible   bool  */
 
 fs.readdir('posts/md', (err, files) => {
   if (err) {
     console.log(err)
     return 'Eror Reading Directory...'
   }
-  console.log(files)
   files.forEach((file, index) => {
     fs.readFile(path.join('posts', 'md', file), 'utf-8', (err, contents) => {
       if (err) {
@@ -38,13 +29,11 @@ fs.readdir('posts/md', (err, files) => {
         JSON.stringify(meta, null, 2),
         err => {
           if (err) {
-            return console.log(err)
+            console.log(err)
+            return err
           }
-
-          console.log('The file was saved!')
         }
       )
-      console.log()
     })
   })
 })
