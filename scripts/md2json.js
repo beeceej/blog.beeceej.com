@@ -1,6 +1,14 @@
 const fs = require('fs')
 const path = require('path')
 const crypto = require('crypto')
+/*
+ID        string    `json:"id"`
+	Title     string    `json:"title"`
+	Author    string    `json:"author"`
+	Body      string    `json:"body"`
+	PostedAt  time.Time `json:"postedAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+	Visible   bool  */
 
 fs.readdir('posts/md', (err, files) => {
   if (err) {
@@ -20,8 +28,11 @@ fs.readdir('posts/md', (err, files) => {
         .createHash('md5')
         .update(contents, 'binary')
         .digest('hex')
-      console.log(meta.id)
-
+      if (meta['visible'] === 'true') {
+        meta['visible'] = true
+      } else {
+        meta['visible'] = false
+      }
       fs.writeFile(
         path.join('posts', 'json', `${meta['id']}.json`),
         JSON.stringify(meta, null, 2),
