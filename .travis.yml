@@ -13,5 +13,6 @@ deploy:
   bucket: "blog.beeceej.com"
   region: us-east-1
   local_dir: ./dist/
+  skip_cleanup: true
 on:
   branch: master
