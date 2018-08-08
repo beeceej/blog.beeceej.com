@@ -4,3 +4,13 @@ language: node_js
 node_js:
   - 0.6
   - 0.8
+
+install: npm install
+script: npm run build && node scripts
+deploy:
+  provider: s3
+  access_key_id: $ACCESS_KEY_ID
+  secret_access_key: $SECRETE_ACCESS_KEY
+  bucket: "blog.beeceej.com"
+  region: us-east-1
+  local_dir: dist
