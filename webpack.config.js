@@ -5,7 +5,10 @@ const htmlWebpackPlugin = new HtmlWebPackPlugin({
   filename: './index.html',
   favicon: './src/static/favicon.png',
 })
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const CompressionPlugin = require('compression-webpack-plugin')
 const path = require('path')
+const webpack = require('webpack')
 
 module.exports = {
   module: {
@@ -40,6 +43,30 @@ module.exports = {
       },
     ],
   },
+  optimization: {
+    minimizer: [new UglifyJsPlugin()],
+    splitChunks: {
+      chunks: 'async',
+      minSize: 30000,
+      maxSize: 0,
+      minChunks: 1,
+      maxAsyncRequests: 5,
+      maxInitialRequests: 3,
+      automaticNameDelimiter: '~',
+      name: true,
+      cacheGroups: {
+        vendors: {
+          test: /[\\/]node_modules[\\/]/,
+          priority: -10,
+        },
+        default: {
+          minChunks: 2,
+          priority: -20,
+          reuseExistingChunk: true,
+        },
+      },
+    },
+  },
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'bundle.js',
@@ -53,5 +80,12 @@ module.exports = {
         to: './robots.txt',
       },
     ]),
+    new CompressionPlugin({
+      test: /\.js/,
+      deleteOriginalAssets: true,
+    }),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': '"production"',
+    }),
   ],
 }
