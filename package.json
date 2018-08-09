@@ -6,7 +6,7 @@
   "scripts": {
     "test": "",
     "start": "webpack-dev-server --mode development --open --cheap-module-source-map --history-api-fallback",
-    "build": "NODE_ENV=production webpack --mode production"
+    "build": "NODE_ENV=production webpack --mode production --optimize-dedupe"
   },
   "keywords": [],
   "author": "",
@@ -39,6 +39,7 @@
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
+    "compression-webpack-plugin": "^1.1.11",
     "copy-webpack-plugin": "^4.5.2",
     "css-loader": "^0.28.11",
     "eslint": "^5.0.1",
@@ -49,6 +50,7 @@
     "prettier": "^1.13.6",
     "sass-loader": "^7.0.1",
     "style-loader": "^0.21.0",
+    "uglifyjs-webpack-plugin": "^1.2.7",
     "webpack": "^4.6.0",
     "webpack-bundle-analyzer": "^2.13.1",
     "webpack-cli": "^2.0.15",
