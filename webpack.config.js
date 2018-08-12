@@ -82,7 +82,6 @@ module.exports = {
     ]),
     new CompressionPlugin({
       test: /\.js/,
-      deleteOriginalAssets: true,
     }),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': '"production"',
