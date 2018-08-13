@@ -2,18 +2,19 @@
 <!--title: Writing a Go interpreter in Go -->
 <!--author: Brian Jones-->
 <!--postedAt: August 7th, 2018-->
-<!--updatedAt: August 7th, 2018-->
+<!--updatedAt: August 12th, 2018-->
 <!--visible: true-->
 
 ## Why Interpreters
 
-The main reason to use an interpreter is an improved workflow. Python has one, iPython is awesome. The draw of LISP's are the interpreters and the rapid feedback loop that evaluating code on the fly gives you. Hell, even Java has a REPL now; even if I haven't used it yet. Python and Lisp are for the sake of this discussion interpreted languages. At the core of each respective design, is the interpreter. In general, the compilation process of languages like Java (JVM Bytecode) or Go (Binary) doesn't lend itself naturally to evaluating expressions on the fly. Historically, to get a quick feedback while developing in a compiled language goes like this:
+The main reason to use an interpreter is an improved workflow. If you're like me then you're always searching for ways to improve working efficiency. Interpreters are one surefire way to improve productivity, and it's all about shortening feedback loops. Shorter feedback loops usually equate to quicker turn around times. Even with Go, which compiles extremely fast, seeing results as you type like in Python or Lisp can be extremely beneficial. Python and lisp are both interpreted and have special tooling built out for this purpose. The draw of LSIP is the interpreter and the rapid feedback loop that evaluating code on the fly gives you. Hell, even Java has a REPL now, and if Java has something like an interpreter there's no reason Go can't have one. At the core of Python and LISP's respective design, is the interpreter which makes an interpreted workflow first class within each languages respective ecosystem. Unfortunately, in general, the compilation process of languages like Java (JVM Bytecode) or Go (Binary) doesn't lend itself naturally to evaluating expressions on the fly. Historically, to get a quick feedback while developing in a compiled language you'd need to execute some combination of the following steps
 
 1.  Write Tests
 2.  Run Tests, and observe behavior
 3.  Make changes to code
+4.  Repeat
 
-This is a good workflow, but we can do better. This is why interpreters are awesome. Interpreters abstract away the boring parts about testing our code and give us a rapid feed back loop as we work. In EMACs and LISP land, that's just a couple key strokes away.
+This is a good workflow, but we can do better. This is why interpreters are awesome. Interpreters _abstract_ away the boring parts about testing our code and give us rapid feedback loops as we work. In EMACs and LISP land, that's just a couple key strokes away, my goal is to replicate this in Go.
 
 So... with software anything is possible? Just because Go is compiled doesn't mean we can't conjure up an interpreter for a compiled language, developers _are wizards_ aren't we?
 
@@ -21,24 +22,24 @@ So... with software anything is possible? Just because Go is compiled doesn't me
 
 So with the project in mind, I started writing some code.
 
-I have a very loose understanding of what an interpreter is. So as a resultI also have a very loose idea of what the interpreter is. At it's most simple form, I broke down each piece of the interpreter into this:
+I have a very loose understanding of what an interpreter is. So as a result my implementation of an interpreter is very loose is. At it's most simple form, I broke down each piece into these components:
 
-- **Accept some raw text and with the input:**
+- **Interpreter will Accept Some Raw Text:**
   - Classify the text into functions, expressions, etc.
-  - store references to the text
-  - store some history of the text
+  - Store the classified text in memory for later use
+  - Store history of user defined input
 - **Generate code and compile it**
-  - Use the history from previous commands to generate the necessary code
-  - Generate the code, Compile the code, execute the code.
-  - If there is a result, report back to the user
-- **The interpreter should accept multiple forms of communication**
-  - Client Server relationship
+  - Use previous commands to generate code
+  - Compile & Execute the code
+  - Given some result (Error or success), report back to the user
+- **The interpreter should accept multiple forms of Interaction**
+  - Client-Server
   - REPL/CLI (enter some text in, press enter, view results)
   - Communication is decoupled from the core implementation
 
 ## An initial REPL
 
-Turns out, building a usable CLI interface to an interpreter is not easy. my initial strategy was something along these lines
+Turns out, building a usable CLI interface to an interpreter is not easy. my initial strategy looked something like this
 
 ```go
 const mainTmpl = `package main
@@ -98,7 +99,7 @@ func main() {
 }
 ```
 
-This is what I call some ugly Code!
+This is what I call some ugly Code! That's ok! it worked.... kind of
 
 - There's a loop, processing some user input
 - A template which generates the boiler plate of an executable go program
@@ -106,7 +107,7 @@ This is what I call some ugly Code!
   - Run Goimports on the generated Go code (Thank god that's part of the Go toolchain)
   - run the generated code, and reports the output back
 
-This quick 30 min hack was enough validation to continue working. So I began working on parsing out go functions from raw user input
+This quick 30 min hack was enough validation to continue working. So I decided to begin work on parsing out functions from raw user input
 
 ## Parsing Functions
 
@@ -154,7 +155,7 @@ var expressions = map[regexpType]*regexp.Regexp{
 }
 ```
 
-Using the 4 above expression I'm able to piece together each part of a function and store it memory, keyed by its identifier.
+Using the 4 above expression I'm able to piece together each part of a function and store it in memory as a Map
 
 For example,
 
@@ -181,11 +182,11 @@ function() string {
 
 **wouldn't** parse
 
-Similarly, the other 3 expressions are able to parse different parts of a function. I'm admittedly not the best at regular expressions so I'm sure there are cleaner ways if coming to the same solution. So this likely won't stay the same forever. But it works pretty well for now. I was very surprised to find that the ability to parse functions quickly gave the ability to do lots of cool things.
+Similarly, the other 3 expressions are able to parse different parts of a function. I'm admittedly not the best at regular expressions so I'm sure there are cleaner ways if coming to the same solution. So this likely won't stay the same forever. But it works pretty well for now.
 
-After a couple days of hacking on iGo I was able to classify functions, store them in memory, look them up, and generate them on the fly. And as a bonus, since Goimport is so cool, iGo is able to reference 3rd party libraries as well
+After a couple days of hacking on iGo I was able to classify functions, store them in memory, look them up, and generate them on the fly. And as a bonus, since Go already has a great ecosystem Goimports is able to look up references to 3rd party packages; that's awesome!
 
-## Read Interpret Eval
+## Read, Interpret, Eval
 
 The Interpreter struct is very basic. It holds a map of references to functions, and a history of text the interpreter has seen.
 
@@ -226,12 +227,9 @@ func (i *Interpreter) Interpret(text string) {
 }
 ```
 
-By default, we don't eval function declarations right away, I'm just storing them in memory. They'll sit there
+By default, we don't eval function declarations right away, they just sit there until they're needed
 
-- until
-  - The session ends (program exits)
-  - The user requests to interpret a function which has been defined earlier.
-  - At that point the interpreter evals, utilizing the functions declared earlier
+Once the user invokes the interpreter with a function they declared earlier, the interpreter will then attempt to eval the function.
 
 ```go
 case *parse.Expression:
@@ -241,7 +239,7 @@ case *parse.Expression:
         }
 ```
 
-And the eval code is the same in my 30 min hacked together program, just refactored to use the interpreter which is the core implementation.
+And the eval code is the same in my 30 min hacked together program, just refactored to use the core interpreter implementation
 
 ## Decoupling the Interpreter From Input
 
@@ -287,12 +285,12 @@ func main() {
 }
 ```
 
-Notice the last line, if the server fails for any reason, we are able to print out the exact state of the interpreter at the time of crash... (`spew.Dump(i)`). That is powerful, we could hydrate the Interpreter state from any source. Network. FileSystem. CLI Flags.
+Notice the last line, if the server fails for any reason, we are able to print out the exact state of the interpreter at the time of crash... (`spew.Dump(i)`). This is a very powerful concept and lends itself very nicely to programmatic use! For instance one could read from the file system to hydrate state. One could declare a set of default functions in a config file.
 
 ## Integrations
 
-Since we're able to run the interpreter as a server, we can build many unique clients for it. Editor integrations are fun, and essential to the usability of the interpreter, so here's how that might look in VSCode.
+Since we're able to run the interpreter as a server, we can build many unique clients for it. Just write a plugin for your editor of choice and you can have much the same functionality that interpreted language users use and love on a daily basis.
 
-If you're interested in iGo you can find the project [here](https://github.com/beeceej/iGo)
+Keep in mind this project is under active development, What's written here will likely change! to follow the development keep an eye out for further posts! Or, if you're interested in iGo you can follow the development [here](https://github.com/beeceej/iGo).
 
 Part 1 of **_Writing a Go Interpreter in Go_**
