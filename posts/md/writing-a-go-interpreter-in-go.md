@@ -291,6 +291,6 @@ Notice the last line, if the server fails for any reason, we are able to print o
 
 Since we're able to run the interpreter as a server, we can build many unique clients for it. Just write a plugin for your editor of choice and you can have much the same functionality that interpreted language users use and love on a daily basis.
 
-If you're interested in iGo you can find the project [here](https://github.com/beeceej/iGo)
+Keep in mind this project is under active development, What's written here will likely change! to follow the development keep an eye out for further posts! Or, if you're interested in iGo you can follow the development [here](https://github.com/beeceej/iGo).
 
 Part 1 of **_Writing a Go Interpreter in Go_**
