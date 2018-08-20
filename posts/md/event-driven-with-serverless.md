@@ -60,6 +60,7 @@ The Serverless Framework is a tool which reduces the friction for deploy _*Serve
 Event Driven Architectures are a natural fit for Serverless applications.
 
 In a non-event-driven architecture you may have an application architecture which looks like this:
+
 ![non-event-driven](https://static.beeceej.com/images/non-event-driven.jpg)
 
 In this type of architecture a user will upload an image of his/her puppy, and the Puppy Profile Service will then communicate with 3 external services. To do this though, the Puppy Profile Service needs to be intimately aware of the services which it speaks to. Does it really make sense for the Puppy Profile service to know the details of Instagram, or Tinder4Dogs, or PuppyFind.com? To fix this we can move to an architecture like:
