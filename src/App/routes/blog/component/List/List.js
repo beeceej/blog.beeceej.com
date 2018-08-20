@@ -4,8 +4,14 @@ import { fetchPost } from '../../module/blog'
 import styles from '../../../../Style.scss'
 import blogStyles from '../../Blog.scss'
 
-const List = ({ posts }) => (posts ? <div>{posts.map(render)}</div> : <div />)
-
+const List = ({ posts }) => {
+  const sortByID = (a, b) => a.id < b.id
+  if (!posts) {
+    return <div />
+  } else {
+    return <div>{posts.sort(sortByID).map(render)}</div>
+  }
+}
 const render = p => {
   return p.visible ? (
     <div key={p.id} style={{ margin: '1em' }}>
