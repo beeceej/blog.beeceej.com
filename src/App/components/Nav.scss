@@ -1,13 +1,7 @@
-.home {
-  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-size: 1.2em;
-}
 
 .flexContainer {
   padding: 0;
-  margin: 0;
-  flex-basis: 0px;
-  line-height: 2;
+  margin: 0;  
   display: -webkit-box;
   display: -moz-box;
   display: -ms-flexbox;
@@ -15,28 +9,35 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-flow: row wrap;
+}
+
+.nav {
+  font-family: monospace;
+  color: #357cb2;
 }
 
 row {
   width: 100%;
-  align-items: center;
-  justify-content: center;
+}
+
+.flexIcon {
+  text-align: center;
+  padding: 5px;
+  padding-top:3px;
+  margin: 10px;
 }
 
 .flexItem {
+  line-height: 75px;
   text-align: center;
   padding: 5px;
+  margin: 10px;
 }
 
 @media screen and (max-width: 600px){
   .flexContainer {
     -webkit-flex-direction: column;
     flex-direction: column;
-    line-height: 50px;
+    line-height: 0px;
   }
-}
-
-img {
-  max-width: 95%;
 }
