@@ -6,7 +6,6 @@ import Nav from './components/Nav'
 
 const App = () => (
   <div>
-    {/* <NavHeader /> */}
     <Nav />
     <Route exact path="/" component={Home} />
     <Route path="/blog/:id?/" component={BlogContainer} />
