@@ -36,15 +36,17 @@ const icons = [
 ]
 
 const renderNavItem = ({ link, text }) => (
-  <div className={`${styles.row}`}>
-    <NavLink className={`${baseStyles.clickable} ${styles.flexItem}`} to={link}>
-      {text}
-    </NavLink>
-  </div>
+  <NavLink
+    className={`${baseStyles.clickable} ${styles.flexItem}`}
+    to={link}
+    key={text}
+  >
+    {text}
+  </NavLink>
 )
 
 const renderIcon = ({ href, icon }) => (
-  <a className={baseStyles.clickable} href={href}>
+  <a className={baseStyles.clickable} href={href} key={href}>
     <FontAwesomeIcon
       className={`${styles.flexIcon} ${styles.fa}`}
       icon={icon}
