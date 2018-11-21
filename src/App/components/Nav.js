@@ -12,11 +12,11 @@ import {
 const navItems = [
   {
     link: '/',
-    text: 'About'
+    text: 'About',
   },
   {
     link: '/blog',
-    text: 'Thoughts'
+    text: 'Thoughts',
   },
 ]
 
@@ -31,16 +31,15 @@ const icons = [
   },
   {
     href: 'https://github.com/beeceej',
-    icon: faGithub
-  }
+    icon: faGithub,
+  },
 ]
 
 const renderNavItem = ({ link, text }) => (
   <div className={`${styles.row}`}>
-    <NavLink
-      className={`${baseStyles.clickable} ${styles.flexItem}`}
-      to={link}
-    >{text}</NavLink>
+    <NavLink className={`${baseStyles.clickable} ${styles.flexItem}`} to={link}>
+      {text}
+    </NavLink>
   </div>
 )
 
@@ -53,27 +52,19 @@ const renderIcon = ({ href, icon }) => (
   </a>
 )
 
-const Nav = () => {
-  return (
-    <nav>
-      <div
-        className={
-          `${styles.flexContainer} ${styles.nav} ${baseStyles.biggest}`
-        }
-      >
-        {navItems.map(renderNavItem)}
-      </div>
-      <div
-        className={
-          `${styles.flexContainer}`
-        }
-      >
-        {icons.map(renderIcon)}
-      </div>
-    </nav>
-  )
-}
-
-
+const Nav = () => (
+  <nav>
+    <div
+      className={`
+      ${styles.flexContainer} 
+      ${styles.nav} 
+      ${baseStyles.biggest} 
+      ${styles.stack}`}
+    >
+      {navItems.map(renderNavItem)}
+    </div>
+    <div className={`${styles.flexContainer}`}>{icons.map(renderIcon)}</div>
+  </nav>
+)
 
 export default Nav
