@@ -241,3 +241,4 @@ func compose(fns ...funcDeclarationHandler) funcDeclarationHandler {
 ```
 
 In a nutshell, don't be afraid of AST's. They are awesome, code introspection is a lot of fun. And remember, IT'S JUST DATA.
+As always, [you can find iGo here](https://github.com/beeceej/iGo)
