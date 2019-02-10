@@ -2,7 +2,7 @@ language: node_js
 node_js:
   - 'stable'
 script:
-  - npm run build && node scripts/md2json.js
+  - npm run build
 deploy:
   - provider: s3
     access_key_id: $AWS_ACCESS_KEY_ID
