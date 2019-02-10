@@ -1,7 +1,7 @@
 import React from 'react'
 import Home from './routes/home/Home'
 import { Route } from 'react-router-dom'
-import BlogContainer from './routes/blog/container/BlogContainer'
+import BlogContainer from './routes/blog/containers/BlogContainer'
 import Nav from './components/Nav'
 
 const App = () => (
