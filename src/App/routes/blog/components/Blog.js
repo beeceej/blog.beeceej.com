@@ -1,7 +1,7 @@
 import React from 'react'
 import { Route } from 'react-router-dom'
-import ListWrapper from '../component/List/ListWrapper'
-import PostWrapper from '../component/Post/PostWrapper'
+import ListWrapper from '../components/List/ListWrapper'
+import PostWrapper from '../components/Post/PostWrapper'
 class Blog extends React.Component {
   render() {
     const { posts } = this.props

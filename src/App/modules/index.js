@@ -4,7 +4,7 @@ import blogReducer, {
   FETCH_POST,
   onFetchPost,
   onFetchAllPosts,
-} from '../routes/blog/module/blog'
+} from '../routes/blog/modules/blog'
 
 import { takeLatest } from 'redux-saga/effects'
 

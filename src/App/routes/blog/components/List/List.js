@@ -1,6 +1,7 @@
 import React from 'react'
+import Moment from 'react-moment';
 import { NavLink } from 'react-router-dom'
-import { fetchPost } from '../../module/blog'
+import { fetchPost } from '../../modules/blog'
 import baseStyles from '../../../../Style.scss'
 import styles from '../../Blog.scss'
 
@@ -19,7 +20,7 @@ const List = ({ posts }) => {
                 ${styles.title}
                 ${baseStyles.clickable}`}
                 onClick={fetchPost}
-                to={`blog/${p.id}`}
+                to={`blog/${p.normalizedTitle}`}
               >
                 {p.title} ({p.author})
               </NavLink>
@@ -29,7 +30,7 @@ const List = ({ posts }) => {
                 ${baseStyles.mainColor}
                 ${styles.date}`}
               >
-                {p.postedAt}
+               <Moment format="YYYY/MM/DD">{p.postedAt}</Moment> 
               </i>
             </div>
           ) : null
