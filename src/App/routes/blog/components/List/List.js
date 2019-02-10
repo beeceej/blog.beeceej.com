@@ -6,7 +6,7 @@ import baseStyles from '../../../../Style.scss'
 import styles from '../../Blog.scss'
 
 const List = ({ posts }) => {
-  const sortByID = (a, b) => a.id > b.id
+  const sortByID = (a, b) => a.id < b.id
   if (!posts) {
     return <div />
   } else {
