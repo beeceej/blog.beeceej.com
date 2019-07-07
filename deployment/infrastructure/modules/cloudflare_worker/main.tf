@@ -23,7 +23,7 @@ resource "cloudflare_worker_route" "enabled_routes" {
   count      = "${length(var.enabled_route_patterns)}"
   zone       = "${var.account_zone}"
   pattern    = "${element(var.enabled_route_patterns, count.index)}"
-  enabled    = true
+  script_name = "${var.script_name}"
   depends_on = ["cloudflare_worker_script.script"]
 }
 
