@@ -48,6 +48,7 @@ jobs:
           cp /tmp/workspace/dist/* dist
           export TF_VAR_account_id=$AWS_ACCOUNT_ID
           export CLOUDFLARE_TOKEN=$CLOUDFLARE_TOKEN
+          export CLOUDFLARE_ORG_ID=$CLOUDFLARE_ORG_ID
           env=${DEPLOY_ENV:-dev}
           if [ "$env" == "dev" ]; then
             cd deployment/dev
@@ -68,6 +69,7 @@ jobs:
           cp /tmp/workspace/dist/* dist
           export TF_VAR_account_id=$AWS_ACCOUNT_ID
           export CLOUDFLARE_TOKEN=$CLOUDFLARE_TOKEN
+          export CLOUDFLARE_ORG_ID=$CLOUDFLARE_ORG_ID
           env=${DEPLOY_ENV:-dev}
           if [ "$env" == "prod" ]; then
             cd deployment/prod
@@ -88,6 +90,7 @@ jobs:
           cp /tmp/workspace/dist/* dist
           export TF_VAR_account_id=$AWS_ACCOUNT_ID
           export CLOUDFLARE_TOKEN=$CLOUDFLARE_TOKEN
+          export CLOUDFLARE_ORG_ID=$CLOUDFLARE_ORG_ID
           env=${DEPLOY_ENV:-dev}
           if [ "$env" == "dev" ]; then
             cd deployment/dev
@@ -107,6 +110,7 @@ jobs:
           cp /tmp/workspace/dist/* dist
           export TF_VAR_account_id=$AWS_ACCOUNT_ID
           export CLOUDFLARE_TOKEN=$CLOUDFLARE_TOKEN
+          export CLOUDFLARE_ORG_ID=$CLOUDFLARE_ORG_ID
           env=${DEPLOY_ENV:-dev}
           if [ "$env" == "prod" ]; then
             cd deployment/prod
