@@ -82,7 +82,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: /tmp/workspace      
+          at: /tmp/workspace
       - run: |
           mkdir dist
           cp /tmp/workspace/dist/* dist
@@ -101,7 +101,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: /tmp/workspace      
+          at: /tmp/workspace
       - run: |
           mkdir dist
           cp /tmp/workspace/dist/* dist
@@ -116,17 +116,21 @@ jobs:
           fi
   run-deploy-dev:
     docker:
-      - image: mesosphere/aws-cli
+      - image: lambci/lambda:build
     steps:
       - checkout
+      - attach_workspace:
+          at: /tmp/workspace
       - run: |
           aws s3 rm s3://blog-dev.beeceej.com --recursive
           aws s3 cp /tmp/workspace/dist s3://blog-dev.beeceej.com --recursive
   run-deploy-prod:
     docker:
-      - image: mesosphere/aws-cli
+      - image: lambci/lambda:build
     steps:
       - checkout
+      - attach_workspace:
+          at: /tmp/workspace
       - run: |
           aws s3 rm s3://blog.beeceej.com --recursive
           aws s3 cp /tmp/workspace/dist s3://blog.beeceej.com --recursive
