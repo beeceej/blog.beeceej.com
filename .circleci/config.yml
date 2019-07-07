@@ -6,13 +6,23 @@ jobs:
     steps:
       - checkout
       - run: |
-          cd pipeline
-          make build
-          mkdir /tmp/artifacts
-          mkdir /tmp/workspace
-          cp ../bin/*.zip /tmp/artifacts
-          cp ../bin/*.zip /tmp/workspace
-
+          env=${DEPLOY_ENV:-dev}
+          if [ "$env" == "dev" ]; then
+            npm run build:dev
+            mkdir /tmp/artifacts
+            mkdir /tmp/workspace
+            cp dist/*.zip /tmp/artifacts/dist
+            cp dist/*.zip /tmp/workspace/dist
+            exit 0
+          fi
+          if [ "$env" == "prod" ]; then
+            npm run build:prod
+            mkdir /tmp/artifacts
+            mkdir /tmp/workspace
+            cp dist/*.zip /tmp/artifacts/dist
+            cp dist/*.zip /tmp/workspace/dist
+            exit 0
+          fi
       - store_artifacts:
           path: /tmp/artifacts
       - persist_to_workspace:
@@ -25,10 +35,10 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: /tmp/workspace      
+          at: /tmp/workspace
       - run: |
-          mkdir bin
-          cp /tmp/workspace/*.zip bin
+          mkdir dist
+          cp /tmp/workspace/dist/* dist
           export TF_VAR_account_id=$AWS_ACCOUNT_ID
           export CLOUDFLARE_TOKEN=$CLOUDFLARE_TOKEN
           env=${DEPLOY_ENV:-dev}
@@ -47,8 +57,8 @@ jobs:
       - attach_workspace:
           at: /tmp/workspace
       - run: |
-          mkdir bin
-          cp /tmp/workspace/*.zip bin
+          mkdir dist
+          cp /tmp/workspace/dist/* dist
           export TF_VAR_account_id=$AWS_ACCOUNT_ID
           export CLOUDFLARE_TOKEN=$CLOUDFLARE_TOKEN
           env=${DEPLOY_ENV:-dev}
@@ -67,8 +77,8 @@ jobs:
       - attach_workspace:
           at: /tmp/workspace      
       - run: |
-          mkdir bin
-          cp /tmp/workspace/*.zip bin
+          mkdir dist
+          cp /tmp/workspace/dist/* dist
           export TF_VAR_account_id=$AWS_ACCOUNT_ID
           export CLOUDFLARE_TOKEN=$CLOUDFLARE_TOKEN
           env=${DEPLOY_ENV:-dev}
@@ -86,8 +96,8 @@ jobs:
       - attach_workspace:
           at: /tmp/workspace      
       - run: |
-          mkdir bin
-          cp /tmp/workspace/*.zip bin
+          mkdir dist
+          cp /tmp/workspace/dist/* dist
           export TF_VAR_account_id=$AWS_ACCOUNT_ID
           export CLOUDFLARE_TOKEN=$CLOUDFLARE_TOKEN
           env=${DEPLOY_ENV:-dev}
@@ -103,16 +113,16 @@ jobs:
     steps:
       - checkout
       - run: |
-          export state_machine_arn="arn:aws:states:us-east-1:${AWS_ACCOUNT_ID}:stateMachine:blog-post-pipeline"
-          aws stepfunctions start-execution --state-machine-arn  "$state_machine_arn"
+          aws s3 rm s3://blog-dev.beeceej.com --recursive
+          aws s3 cp dist s3://blog-dev.beeceej.com --recursive
   run-deploy-prod:
     docker:
       - image: mesosphere/aws-cli
     steps:
       - checkout
       - run: |
-          export state_machine_arn="arn:aws:states:us-east-1:${AWS_ACCOUNT_ID}:stateMachine:blog-post-pipeline"
-          aws stepfunctions start-execution --state-machine-arn  "$state_machine_arn"
+          aws s3 rm s3://blog.beeceej.com --recursive
+          aws s3 cp dist s3://blog.beeceej.com --recursive
 workflows:
   version: 2
   before-merge:

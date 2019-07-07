@@ -2,16 +2,9 @@ module "blog-beeceej-com" {
   source             = "./modules/static_hosting_s3_bucket"
   bucket_name        = "${var.bucket_name}"
   bucket_policy_json = "${data.aws_iam_policy_document.blog-beeceej-com.json}"
-  cors = {
-    allowed_headers = ["*"]
-    allowed_methods = ["GET"]
-    allowed_origins = ["*"]
-    expose_headers  = ["ETag"]
-    max_age_seconds = 3000
-  }
 }
 
-resource "cloudflare_record" "blog.beeceej.com_CNAME" {
+resource "cloudflare_record" "blog-beeceej-com_CNAME" {
   domain  = "beeceej.com"
   name    = "${var.bucket_name}"
   value   = "${var.bucket_name}.s3-website-us-east-1.amazonaws.com"

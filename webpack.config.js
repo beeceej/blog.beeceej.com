@@ -35,7 +35,7 @@ module.exports = {
             },
           },
           {
-            loader: 'sass-loader', // compiles Sass to CSS
+            loader: 'sass-loader',
           },
         ],
       },
@@ -83,6 +83,7 @@ module.exports = {
     }),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': '"production"',
+      'process.env.DEPLOY_ENV': JSON.stringify(`${process.env.DEPLOY_ENV}`)
     }),
   ],
 }
