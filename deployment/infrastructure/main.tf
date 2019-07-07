@@ -6,6 +6,7 @@ module "blog-beeceej-com" {
 
 module "single_worker" {
   source                  = "./modules/cloudflare_worker"
+  script_name = "${var.bucket_name}-worker"
   enabled_route_patterns  = ["${var.bucket_name}/*"]
   disabled_route_patterns = ["${var.bucket_name}/"]
   account_zone            = "beeceej.com"

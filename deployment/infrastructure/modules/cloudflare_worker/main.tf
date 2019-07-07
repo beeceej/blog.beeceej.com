@@ -1,3 +1,5 @@
+variable "script_name" {}
+
 variable "script_path" {
   description = "script_path is the path to the script under execution"
   default     = "index.js"
@@ -34,6 +36,6 @@ resource "cloudflare_worker_route" "disabled_routes" {
 }
 
 resource "cloudflare_worker_script" "script" {
-  zone    = "${var.account_zone}"
+  name = "${var.script_name}"
   content = "${file(var.script_path)}"
 }
