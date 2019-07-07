@@ -11,3 +11,4 @@ sonar-report.xml
 sonar-project.properties
 .sonar/
 sonar-scanner-*/
+.terraform

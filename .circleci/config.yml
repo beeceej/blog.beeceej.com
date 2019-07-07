@@ -1,18 +1,35 @@
 version: 2
 jobs:
-  build-and-persist-artifacts:
+  build-and-persist-artifacts-dev:
     docker:
-      - image: "lambci/lambda:build-node.x"
+      - image: "lambci/lambda:build-nodejs10.x"
     steps:
       - checkout
       - run: |
-          cd pipeline
-          make build
+          npm install
+          npm run build:dev
           mkdir /tmp/artifacts
           mkdir /tmp/workspace
-          cp ../bin/*.zip /tmp/artifacts
-          cp ../bin/*.zip /tmp/workspace
-
+          cp -r dist /tmp/artifacts/dist
+          cp -r dist /tmp/workspace/dist
+      - store_artifacts:
+          path: /tmp/artifacts
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - ./
+  build-and-persist-artifacts-prod:
+    docker:
+      - image: "lambci/lambda:build-nodejs10.x"
+    steps:
+      - checkout
+      - run: |
+          npm install
+          npm run build:prod
+          mkdir /tmp/artifacts
+          mkdir /tmp/workspace
+          cp -r dist /tmp/artifacts/dist
+          cp -r dist /tmp/workspace/dist
       - store_artifacts:
           path: /tmp/artifacts
       - persist_to_workspace:
@@ -25,10 +42,10 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: /tmp/workspace      
+          at: /tmp/workspace
       - run: |
-          mkdir bin
-          cp /tmp/workspace/*.zip bin
+          mkdir dist
+          cp /tmp/workspace/dist/* dist
           export TF_VAR_account_id=$AWS_ACCOUNT_ID
           export CLOUDFLARE_TOKEN=$CLOUDFLARE_TOKEN
           env=${DEPLOY_ENV:-dev}
@@ -47,8 +64,8 @@ jobs:
       - attach_workspace:
           at: /tmp/workspace
       - run: |
-          mkdir bin
-          cp /tmp/workspace/*.zip bin
+          mkdir dist
+          cp /tmp/workspace/dist/* dist
           export TF_VAR_account_id=$AWS_ACCOUNT_ID
           export CLOUDFLARE_TOKEN=$CLOUDFLARE_TOKEN
           env=${DEPLOY_ENV:-dev}
@@ -67,8 +84,8 @@ jobs:
       - attach_workspace:
           at: /tmp/workspace      
       - run: |
-          mkdir bin
-          cp /tmp/workspace/*.zip bin
+          mkdir dist
+          cp /tmp/workspace/dist/* dist
           export TF_VAR_account_id=$AWS_ACCOUNT_ID
           export CLOUDFLARE_TOKEN=$CLOUDFLARE_TOKEN
           env=${DEPLOY_ENV:-dev}
@@ -86,8 +103,8 @@ jobs:
       - attach_workspace:
           at: /tmp/workspace      
       - run: |
-          mkdir bin
-          cp /tmp/workspace/*.zip bin
+          mkdir dist
+          cp /tmp/workspace/dist/* dist
           export TF_VAR_account_id=$AWS_ACCOUNT_ID
           export CLOUDFLARE_TOKEN=$CLOUDFLARE_TOKEN
           env=${DEPLOY_ENV:-dev}
@@ -103,21 +120,21 @@ jobs:
     steps:
       - checkout
       - run: |
-          export state_machine_arn="arn:aws:states:us-east-1:${AWS_ACCOUNT_ID}:stateMachine:blog-post-pipeline"
-          aws stepfunctions start-execution --state-machine-arn  "$state_machine_arn"
+          aws s3 rm s3://blog-dev.beeceej.com --recursive
+          aws s3 cp /tmp/workspace/dist s3://blog-dev.beeceej.com --recursive
   run-deploy-prod:
     docker:
       - image: mesosphere/aws-cli
     steps:
       - checkout
       - run: |
-          export state_machine_arn="arn:aws:states:us-east-1:${AWS_ACCOUNT_ID}:stateMachine:blog-post-pipeline"
-          aws stepfunctions start-execution --state-machine-arn  "$state_machine_arn"
+          aws s3 rm s3://blog.beeceej.com --recursive
+          aws s3 cp /tmp/workspace/dist s3://blog.beeceej.com --recursive
 workflows:
   version: 2
   before-merge:
     jobs:
-      - build-and-persist-artifacts:
+      - build-and-persist-artifacts-dev:
           filters:
             branches:
               ignore:
@@ -129,17 +146,21 @@ workflows:
               ignore:
                 - master
           requires:
-            - build-and-persist-artifacts
+            - build-and-persist-artifacts-dev
   deploy:
     jobs:
-      - build-and-persist-artifacts:
+      - build-and-persist-artifacts-dev:
           filters:
             branches:
               only:
                 - master
+      - build-and-persist-artifacts-prod:
+          filters:
             tags:
               only:
                 - /v.*/
+            branches:
+              ignore: /.*/
       - apply-terraform-dev:
           context: terraformx-dev
           filters:
@@ -147,7 +168,7 @@ workflows:
               only:
                 - master
           requires:
-            - build-and-persist-artifacts
+            - build-and-persist-artifacts-dev
       - run-deploy-dev:
           context: blog-beeceej-com-deploy-dev
           filters:
@@ -156,7 +177,7 @@ workflows:
                 - master
           requires:
             - apply-terraform-dev
-            - build-and-persist-artifacts
+            - build-and-persist-artifacts-dev
       - test-terraform-plan-prod:
           context: terraformx-prod
           filters:
@@ -166,7 +187,7 @@ workflows:
             branches:
               ignore: /.*/
           requires:
-            - build-and-persist-artifacts
+            - build-and-persist-artifacts-prod
       - apply-terraform-prod:
           context: terraformx-prod
           filters:
@@ -177,8 +198,8 @@ workflows:
               ignore: /.*/
           requires:
             - test-terraform-plan-prod
-            - build-and-persist-artifacts
-      - run-publish-pipeline-prod:
+            - build-and-persist-artifacts-prod
+      - run-deploy-prod:
           context: run-deploy-prod
           filters:
             tags:
