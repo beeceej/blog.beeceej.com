@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "",
-    "start": "webpack-dev-server --mode development --open --cheap-module-source-map --history-api-fallback",
-    "build": "NODE_ENV=production webpack --mode production --optimize-dedupe"
+    "start": "webpack-dev-server --env.DEPLOY_ENV=dev --mode development --open --cheap-module-source-map --history-api-fallback",
+    "build:dev": "NODE_ENV=production webpack --env.DEPLOY_ENV=dev --mode production --optimize-dedupe",
+    "build:prod": "NODE_ENV=production webpack --env.DEPLOY_ENV=prod  --mode production --optimize-dedupe"
   },
   "keywords": [],
   "author": "",
