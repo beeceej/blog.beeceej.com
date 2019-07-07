@@ -37,6 +37,5 @@ resource "cloudflare_worker_route" "disabled_routes" {
 
 resource "cloudflare_worker_script" "script" {
   name = "${var.script_name}"
-  zone    = "${var.account_zone}"
   content = "${file(var.script_path)}"
 }
