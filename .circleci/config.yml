@@ -1,0 +1,211 @@
+version: 2
+jobs:
+  build-and-persist-artifacts-dev:
+    docker:
+      - image: "lambci/lambda:build-nodejs10.x"
+    steps:
+      - checkout
+      - run: |
+          npm install
+          npm run build:dev
+          mkdir /tmp/artifacts
+          mkdir /tmp/workspace
+          cp -r dist /tmp/artifacts/dist
+          cp -r dist /tmp/workspace/dist
+      - store_artifacts:
+          path: /tmp/artifacts
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - ./
+  build-and-persist-artifacts-prod:
+    docker:
+      - image: "lambci/lambda:build-nodejs10.x"
+    steps:
+      - checkout
+      - run: |
+          npm install
+          npm run build:prod
+          mkdir /tmp/artifacts
+          mkdir /tmp/workspace
+          cp -r dist /tmp/artifacts/dist
+          cp -r dist /tmp/workspace/dist
+      - store_artifacts:
+          path: /tmp/artifacts
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - ./
+  test-terraform-plan-dev:
+    docker:
+      - image: hashicorp/terraform:0.12.3
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp/workspace
+      - run: |
+          mkdir dist
+          cp /tmp/workspace/dist/* dist
+          export TF_VAR_account_id=$AWS_ACCOUNT_ID
+          export CLOUDFLARE_TOKEN=$CLOUDFLARE_TOKEN
+          env=${DEPLOY_ENV:-dev}
+          if [ "$env" == "dev" ]; then
+            cd deployment/dev
+            terraform init
+            terraform plan
+            exit "$?"
+          fi
+          exit 1
+  test-terraform-plan-prod:
+    docker:
+      - image: hashicorp/terraform:0.12.3
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp/workspace
+      - run: |
+          mkdir dist
+          cp /tmp/workspace/dist/* dist
+          export TF_VAR_account_id=$AWS_ACCOUNT_ID
+          export CLOUDFLARE_TOKEN=$CLOUDFLARE_TOKEN
+          env=${DEPLOY_ENV:-dev}
+          if [ "$env" == "prod" ]; then
+            cd deployment/prod
+            terraform init
+            terraform plan
+            exit "$?"
+          fi
+          exit 1
+  apply-terraform-dev:
+    docker:
+      - image: hashicorp/terraform:0.12.3
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp/workspace      
+      - run: |
+          mkdir dist
+          cp /tmp/workspace/dist/* dist
+          export TF_VAR_account_id=$AWS_ACCOUNT_ID
+          export CLOUDFLARE_TOKEN=$CLOUDFLARE_TOKEN
+          env=${DEPLOY_ENV:-dev}
+          if [ "$env" == "dev" ]; then
+            cd deployment/dev
+            terraform init
+            terraform apply -auto-approve
+            exit "$?"
+          fi
+  apply-terraform-prod:
+    docker:
+      - image: hashicorp/terraform:0.12.3
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp/workspace      
+      - run: |
+          mkdir dist
+          cp /tmp/workspace/dist/* dist
+          export TF_VAR_account_id=$AWS_ACCOUNT_ID
+          export CLOUDFLARE_TOKEN=$CLOUDFLARE_TOKEN
+          env=${DEPLOY_ENV:-dev}
+          if [ "$env" == "prod" ]; then
+            cd deployment/prod
+            terraform init
+            terraform apply -auto-approve
+            exit "$?"
+          fi
+  run-deploy-dev:
+    docker:
+      - image: mesosphere/aws-cli
+    steps:
+      - checkout
+      - run: |
+          aws s3 rm s3://blog-dev.beeceej.com --recursive
+          aws s3 cp /tmp/workspace/dist s3://blog-dev.beeceej.com --recursive
+  run-deploy-prod:
+    docker:
+      - image: mesosphere/aws-cli
+    steps:
+      - checkout
+      - run: |
+          aws s3 rm s3://blog.beeceej.com --recursive
+          aws s3 cp /tmp/workspace/dist s3://blog.beeceej.com --recursive
+workflows:
+  version: 2
+  before-merge:
+    jobs:
+      - build-and-persist-artifacts-dev:
+          filters:
+            branches:
+              ignore:
+                - master
+      - test-terraform-plan-dev:
+          context: terraformx-dev
+          filters:
+            branches:
+              ignore:
+                - master
+          requires:
+            - build-and-persist-artifacts-dev
+  deploy:
+    jobs:
+      - build-and-persist-artifacts-dev:
+          filters:
+            branches:
+              only:
+                - master
+      - build-and-persist-artifacts-prod:
+          filters:
+            tags:
+              only:
+                - /v.*/
+            branches:
+              ignore: /.*/
+      - apply-terraform-dev:
+          context: terraformx-dev
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - build-and-persist-artifacts-dev
+      - run-deploy-dev:
+          context: blog-beeceej-com-deploy-dev
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - apply-terraform-dev
+            - build-and-persist-artifacts-dev
+      - test-terraform-plan-prod:
+          context: terraformx-prod
+          filters:
+            tags:
+              only:
+                - /v.*/
+            branches:
+              ignore: /.*/
+          requires:
+            - build-and-persist-artifacts-prod
+      - apply-terraform-prod:
+          context: terraformx-prod
+          filters:
+            tags:
+              only:
+                - /v.*/
+            branches:
+              ignore: /.*/
+          requires:
+            - test-terraform-plan-prod
+            - build-and-persist-artifacts-prod
+      - run-deploy-prod:
+          context: run-deploy-prod
+          filters:
+            tags:
+              only:
+                - /v.*/
+            branches:
+              ignore: /.*/
+          requires:
+            - apply-terraform-prod

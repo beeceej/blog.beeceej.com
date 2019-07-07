@@ -31,13 +31,11 @@ module.exports = {
             options: {
               modules: true,
               importLoaders: 1,
-              localIdentName: '[name]_[local]_[hash:base64]',
-              sourceMap: true,
-              minimize: true,
+              sourceMap: true
             },
           },
           {
-            loader: 'sass-loader', // compiles Sass to CSS
+            loader: 'sass-loader',
           },
         ],
       },
@@ -85,6 +83,7 @@ module.exports = {
     }),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': '"production"',
+      'process.env.DEPLOY_ENV': JSON.stringify(`${process.env.DEPLOY_ENV}`)
     }),
   ],
 }
