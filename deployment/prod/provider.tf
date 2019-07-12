@@ -8,7 +8,7 @@ provider "cloudflare" {
 
 terraform {
   backend "s3" {
-    bucket = "beeceej-ops"
+    bucket = "prod-beeceej-ops"
     key    = "remote-state/blog.beeceej.com/terraform.tfstate"
   }
 }

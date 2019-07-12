@@ -8,11 +8,11 @@ module "blog-beeceej-com" {
 }
 
 resource "aws_iam_user" "blog-beeceej-com-deploy-bundle" {
-  name = "blog-beeceej-com-deploy-bundle}"
+  name = "blog-beeceej-com-deploy-bundle"
 }
 
 resource "aws_iam_user_policy" "blog-beeceej-com-deploy-bundle" {
-  name = "${local.name}"
+  name = "blog-beeceej-com-deploy-bundle"
   user = "${aws_iam_user.blog-beeceej-com-deploy-bundle.name}"
   policy = "${data.aws_iam_policy_document.blog-beeceej-com-deploy-bundle.json}"
 }
