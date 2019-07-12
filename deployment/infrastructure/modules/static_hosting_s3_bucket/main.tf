@@ -11,7 +11,7 @@ variable "acl" {
 }
 
 
-resource "aws_s3_bucket" "blog.beeceej.com" {
+resource "aws_s3_bucket" "blog-beeceej-com" {
   bucket = "${var.bucket_name}"
   acl    = "${var.acl}"
   policy = "${var.bucket_policy_json}"

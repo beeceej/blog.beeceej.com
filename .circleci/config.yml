@@ -208,7 +208,7 @@ workflows:
             - test-terraform-plan-prod
             - build-and-persist-artifacts-prod
       - run-deploy-prod:
-          context: run-deploy-prod
+          context: blog-beeceej-com-deploy-prod
           filters:
             tags:
               only:
